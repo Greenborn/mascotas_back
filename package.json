@@ -1,0 +1,30 @@
+{
+  "name": "servicios_formulario_dinamico_api",
+  "version": "1.0.0",
+  "description": "API del servicio de formularios dinámicos",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "serve-dev": "nodemon index.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/agc-desarrollo/servicios_formulario_dinamico.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/agc-desarrollo/servicios_formulario_dinamico/issues"
+  },
+  "homepage": "https://github.com/agc-desarrollo/servicios_formulario_dinamico#readme",
+  "dependencies": {
+    "cors": "^2.8.5",
+    "dotenv": "^16.0.3",
+    "express": "^4.18.2",
+    "express-session": "^1.17.3",
+    "knex": "^2.4.2",
+    "socket.io": "^4.5.4",
+    "sqlite3": "^5.1.4",
+    "uuid": "^9.0.0"
+  }
+}
