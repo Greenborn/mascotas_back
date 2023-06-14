@@ -37,6 +37,17 @@ exports.do_migrations = async function () {
         })
     }
 
+    if (! await hasTable("reportes_extravios")) {
+      console.log("Creo tabla reportes_extravios")
+      await global.knex.schema.createTable('reportes_extravios', function (table) {
+        table.primary(["id"])
+        table.string('id', 36)
+        table.string('comentario',2048)
+        table.string('id_mascota',36)
+        table.datetime('fecha_registro')
+      })
+  }
+
     if (! await hasTable("preguntas_frecuentes")) {
         console.log("Creo tabla preguntas_frecuentes")
         await global.knex.schema.createTable('preguntas_frecuentes', function (table) {
