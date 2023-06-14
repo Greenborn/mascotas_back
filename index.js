@@ -43,7 +43,6 @@ global.knex = knex
 migrations.do_migrations()
 
 //ROUTER
-api.use("/admin", require("./middleware/admin_roles"))
-
+api.use("/", require("./middleware/admin_roles"))
+api.listen(process.env.service_port_admin)
 console.log("> puerto: ", process.env.service_port_admin)
-server_admin.listen(process.env.service_port_admin)

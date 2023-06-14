@@ -12,9 +12,11 @@ router.use(function (request, response, next) {
 
 router.use("/varios", require("../routes/varios")) //pruebas 
 
+router.use("/mascotas", require("../routes/mascotas"))  
+
 var paths = [
   
   { path: "/varios/" },
-
+  { path: "/mascotas/get_all" },
 ]
 
