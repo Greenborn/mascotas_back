@@ -1,23 +1,84 @@
 const uuid = require("uuid")
 
 exports.do_migrations = async function () {
-    if (! await hasTable("form")) {
-        console.log("Creo tabla form")
-        await global.knex.schema.createTable('form', function (table) {
+    if (! await hasTable("tipo_mascota")) {
+        console.log("Creo tabla tipo_mascota")
+        await global.knex.schema.createTable('tipo_mascota', function (table) {
           table.primary(["id"])
           table.string('id', 36)
-          table.json('definition')
+          table.string('tipo')
         })
     }
 
-    if (! await hasTable("form_response")) {
-        console.log("Creo tabla form_response")
-        await global.knex.schema.createTable('form_response', function (table) {
-          table.primary(["id", "id_form"])
+    if (! await hasTable("mascotas_registradas")) {
+        console.log("Creo tabla mascotas_registradas")
+        await global.knex.schema.createTable('mascotas_registradas', function (table) {
+          table.primary(["id"])
           table.string('id', 36)
-          table.string('id_form', 36)
-          table.string('cuil', 12)
-          table.json('response')
+          table.datetime('fecha_registro')
+          table.datetime('fecha_actualizacion')
+          table.string('id_usuario', 36)
+          table.string('tipo', 36)
+          table.datetime('fecha_nacimiento')
+          table.string('sexo', 36)
+          table.string('raza', 36)
+          table.string('nombre', 255)
+          table.string('descripcion', 512)
+        })
+    }
+
+    if (! await hasTable("imagenes_mascotas")) {
+        console.log("Creo tabla imagenes_mascotas")
+        await global.knex.schema.createTable('imagenes_mascotas', function (table) {
+          table.primary(["id"])
+          table.string('id', 36)
+          table.string('url',255)
+          table.string('id_mascota',36)
+        })
+    }
+
+    if (! await hasTable("preguntas_frecuentes")) {
+        console.log("Creo tabla preguntas_frecuentes")
+        await global.knex.schema.createTable('preguntas_frecuentes', function (table) {
+          table.primary(["id"])
+          table.string('id', 36)
+          table.string('pregunta',255)
+          table.string('respuesta',2048)
+          table.integer('orden')
+        })
+    }
+
+    if (! await hasTable("legal")) {
+        console.log("Creo tabla legal")
+        await global.knex.schema.createTable('legal', function (table) {
+          table.primary(["id"])
+          table.string('id', 36)
+          table.string('texto',4096)
+        })
+    }
+
+    if (! await hasTable("usuario")) {
+        console.log("Creo tabla usuario")
+        await global.knex.schema.createTable('usuario', function (table) {
+          table.primary(["id"])
+          table.string('id', 36)
+          table.string('nombre',255)
+          table.string('email',255)
+          table.string('descripcion',1024)
+          table.datetime('fecha_nacimiento')
+          table.datetime('fecha_creado')
+          table.datetime('fecha_modificado')
+          table.string('pass',512)
+        })
+    }
+
+    if (! await hasTable("imagenes_usuarios")) {
+        console.log("Creo tabla imagenes_usuarios")
+        await global.knex.schema.createTable('imagenes_usuarios', function (table) {
+          table.primary(["id"])
+          table.string('id', 36)
+          table.string('url',255)
+          table.string('id_usuario',36)
         })
     }
 }

@@ -3,7 +3,9 @@ const Conf       = require('./config.js')
 const Session    = require('express-session')
 const cors       = require('cors')
 const migrations = require('./migrations/migrations.js')
+const uuid = require("uuid")
 
+console.log( uuid.v4())
 //START EXPRESS
 let api    = require('express')();
 let server_admin = require('http').Server(api);
