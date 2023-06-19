@@ -21,6 +21,11 @@ router.post('/login', async function (req, res) {
             let isValid = await bcrypt.compare(req.body.p, usuario.pass)
             if (isValid){
                 delete usuario.pass
+
+                req.session.isLogged = true
+                req.session.u_data = { ...usuario }
+                req.session.save()
+
                 return res.status(200).send({ stat: true, data: usuario })
             } else {
                 return res.status(200).send({ stat: false, data: [], text: 'Usuario o contraseñas inválida.' })
@@ -33,6 +38,23 @@ router.post('/login', async function (req, res) {
         console.log(error)
         return res.status(200).send({ stat: false, data: [], text: 'Usuario o contraseñas inválida.' })
     }
-    
+})
 
+router.put('/logout', async function (req, res) {
+    console.log('[USUARIO][logout] ')
+    
+    try {
+        req.session.isLogged = false
+        req.session.u_data = null
+        req.session.save()
+        return res.status(200).send({ stat: true, data: [] })
+    } catch (error) {
+        console.log(error)
+        return res.status(200).send({ stat: false, data: [], text: 'Error Interno' })
+    }
+})
+
+router.get('/stat', async function (req, res) {
+    console.log('[USUARIO][stat] ')
+    return res.status(200).send({ stat: true, data: req.session })
 })

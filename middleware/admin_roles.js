@@ -21,5 +21,7 @@ var paths = [
   { path: "/mascotas/get_all" },
 
   { path: "/usuario/login" },
+  { path: "/usuario/logout" },
+  { path: "/usuario/stat" },
 ]
 
