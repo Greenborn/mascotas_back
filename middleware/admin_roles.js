@@ -10,18 +10,17 @@ router.use(function (request, response, next) {
   check_roles(request, response, next, paths)
 })
 
-router.use("/varios", require("../routes/varios")) //pruebas 
-
 router.use("/mascotas", require("../routes/mascotas"))  
 router.use("/usuario", require("../routes/usuarios"))  
 
 var paths = [
   
-  { path: "/varios/" },
   { path: "/mascotas/get_all" },
 
   { path: "/usuario/login" },
   { path: "/usuario/logout" },
+  { path: "/usuario/registro" },
+  { path: "/usuario/verifica_email" },
   { path: "/usuario/stat" },
 ]
 

@@ -80,6 +80,8 @@ exports.do_migrations = async function () {
           table.datetime('fecha_creado')
           table.datetime('fecha_modificado')
           table.string('pass',512)
+          table.string('verif_code',36)
+          table.datetime('fecha_verif_code')
         })
     }
 
