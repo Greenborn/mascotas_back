@@ -4,6 +4,7 @@ const Session    = require('express-session')
 const cors       = require('cors')
 const migrations = require('./migrations/migrations.js')
 const uuid = require("uuid")
+const bcrypt = require('bcrypt')
 
 console.log( uuid.v4())
 //START EXPRESS
@@ -46,3 +47,12 @@ migrations.do_migrations()
 api.use("/", require("./middleware/admin_roles"))
 api.listen(process.env.service_port_admin)
 console.log("> puerto: ", process.env.service_port_admin)
+
+
+setTimeout( async ()=> {
+    let r = await bcrypt.hash("pass", 10)
+if (r){
+    console.log(r)
+}
+
+}, 10)
