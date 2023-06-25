@@ -16,6 +16,7 @@ router.use("/usuario", require("../routes/usuarios"))
 var paths = [
   
   { path: "/mascotas/get_all" },
+  { path: "/mascotas/get" },
 
   { path: "/usuario/login" },
   { path: "/usuario/logout" },
