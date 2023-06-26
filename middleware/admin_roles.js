@@ -12,6 +12,7 @@ router.use(function (request, response, next) {
 
 router.use("/mascotas", require("../routes/mascotas"))  
 router.use("/usuario", require("../routes/usuarios"))  
+router.use("/general", require("../routes/general"))  
 
 var paths = [
   
@@ -23,5 +24,7 @@ var paths = [
   { path: "/usuario/registro" },
   { path: "/usuario/verifica_email" },
   { path: "/usuario/stat" },
+  
+  { path: "/general/preguntas_frecuentes"}
 ]
 

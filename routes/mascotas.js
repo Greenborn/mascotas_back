@@ -20,7 +20,7 @@ router.get('/get', async function (req, res) {
     return res.status(200).send({ stat: false, data: [] })
 
   let mascota = await global.knex("mascotas_registradas")
-                  .select('mascotas_registradas.*', 'imagenes_mascotas.url as imagen').where({ id: req.query.id }).first()
+                  .select().where({ id: req.query.id }).first()
   mascota['imagenes'] = await global.knex("imagenes_mascotas").select().where({ id_mascota: req.query.id })
 
   res.status(200).send({ stat: true, data: mascota })
