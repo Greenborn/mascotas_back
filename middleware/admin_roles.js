@@ -18,6 +18,8 @@ var paths = [
   
   { path: "/mascotas/get_all" },
   { path: "/mascotas/get" },
+  { path: "/mascotas/agregar" },
+  { path: "/mascotas/editar" },
 
   { path: "/usuario/login" },
   { path: "/usuario/logout" },
