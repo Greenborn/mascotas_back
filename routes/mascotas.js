@@ -4,6 +4,32 @@ module.exports = router
 
 const uuid = require("uuid")
 
+router.post('/agregar_foto', async function (req, res) {
+  console.log('[MASCOTAS][agregar_foto] ',req.body)
+
+  try {
+
+
+    return res.status(200).send({ stat: true, text: 'Foto guardada correctamente'})
+  } catch (error) {
+    console.log(error)
+    return res.status(200).send({ stat: false, text: 'Error interno'})
+  }
+}) 
+
+router.post('/eliminar_foto', async function (req, res) {
+  console.log('[MASCOTAS][eliminar_foto] ',req.body)
+
+  try {
+
+
+    return res.status(200).send({ stat: true, text: 'Foto eliminada correctamente'})
+  } catch (error) {
+    console.log(error)
+    return res.status(200).send({ stat: false, text: 'Error interno'})
+  }
+})
+
 router.post('/agregar', async function (req, res) {
   console.log('[MASCOTAS][agregar] ',req.body)
 

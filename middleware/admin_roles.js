@@ -20,6 +20,7 @@ var paths = [
   { path: "/mascotas/get" },
   { path: "/mascotas/agregar" },
   { path: "/mascotas/editar" },
+  { path: "/mascotas/agregar_foto" },
 
   { path: "/usuario/login" },
   { path: "/usuario/logout" },
