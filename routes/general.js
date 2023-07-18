@@ -11,3 +11,13 @@ router.get('/preguntas_frecuentes', async function (req, res) {
     })
   
 })
+
+router.get('/legal', async function (req, res) {
+    console.log('[GENERAL][legal] ',req.body)
+
+    res.status(200).send({ stat: true, data: 
+        await global.knex("legal")
+                .select()
+    })
+  
+})

@@ -28,6 +28,7 @@ var paths = [
   { path: "/usuario/verifica_email" },
   { path: "/usuario/stat" },
   
-  { path: "/general/preguntas_frecuentes"}
+  { path: "/general/preguntas_frecuentes"},
+  { path: "/general/legal"}
 ]
 
