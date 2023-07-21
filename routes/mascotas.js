@@ -1,5 +1,6 @@
-const express = require('express')
-const router = express.Router()
+const express  = require('express')
+const fs       = require('fs')
+const router   = express.Router()
 module.exports = router
 
 const uuid = require("uuid")
@@ -49,7 +50,7 @@ router.post('/agregar', async function (req, res) {
     return res.status(200).send({ stat: false, text: 'Error interno'})
   }
   
-  try { console.log(req.session.u_data)
+  try { 
     let _insert = {
       id: uuid.v4(), fecha_registro: new Date(), fecha_actualizacion: new Date(),
       id_usuario: req.session.u_data.id,
@@ -57,8 +58,19 @@ router.post('/agregar', async function (req, res) {
       sexo: req.body?.sexo, raza: req.body?.raza
     }
 
+    let imagenes = []
+    if (req.body?.imagenes) imagenes = req.body?.imagenes
+
+    for (let c=0; c < imagenes.length; c++){
+      let base64Image = String(imagenes[c].base64).split(';base64,').pop();
+      let extension = imagenes[c].type.split('age/')[1]
+      fs.writeFile('public/img/'+new Date().getTime()+req.session.u_data.id+'.'+extension, base64Image, {encoding: 'base64'}, function(err) {
+        console.log('File created');
+      });
+    }
+
     await trx('mascotas_registradas').insert(_insert)
-    await trx.commit()
+    //await trx.commit()
     return res.status(200).send({ stat: true, text: 'Mascota registrada correctamente'})
   } catch (error) {
     trx.rollback()
