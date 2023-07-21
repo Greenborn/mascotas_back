@@ -5,10 +5,10 @@ const cors       = require('cors')
 const migrations = require('./migrations/migrations.js')
 const uuid = require("uuid")
 const bcrypt = require('bcrypt')
-
+const express = require("express")
 console.log( uuid.v4())
 //START EXPRESS
-let api    = require('express')();
+let api    = express();
 let server_admin = require('http').Server(api);
 
 //CORS
@@ -19,7 +19,7 @@ const corsOptions = {
 api.use(cors(corsOptions))
 
 //FILES
-
+api.use("/public", express.static('public'))
 //
 const bodyParser = require("body-parser")
 api.use(bodyParser.json({limit: '5mb', extended: true}))
