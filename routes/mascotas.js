@@ -54,7 +54,7 @@ router.post('/agregar', async function (req, res) {
     const id_mascota = uuid.v4()
     let _insert = {
       id: id_mascota, fecha_registro: new Date(), fecha_actualizacion: new Date(),
-      id_usuario: req.session.u_data.id,
+      id_usuario: req.session.u_data.id, tipo: req.body.tipo,
       nombre: req.body.nombre, descripcion: req.body.descripcion, fecha_nacimiento: req.body.fecha_nacimiento,
       sexo: req.body?.sexo, raza: req.body?.raza
     }
@@ -89,7 +89,42 @@ router.post('/agregar', async function (req, res) {
 router.put('/editar', async function (req, res) {
   console.log('[MASCOTAS][editar] ',req.body)
 
-  res.status(200).send({ stat: false, text: 'Funcionalidad no implementada'})
+  if (!req.body?.id)
+    return res.status(200).send({ stat: false, text: 'Error interno' })
+
+  if (!req.body?.nombre)
+    return res.status(200).send({ stat: false, text: 'Es necesario completar el nombre' })
+
+  if (!req.body?.descripcion)
+    return res.status(200).send({ stat: false, text: 'Es necesario completar la descripción' })
+
+  if (!req.body?.fecha_nacimiento)
+    return res.status(200).send({ stat: false, text: 'Es necesario completar la fecha de nacimiento' })
+
+  try {
+    var trx = await global.knex.transaction()
+  } catch (error) {
+    console.log(error)
+    return res.status(200).send({ stat: false, text: 'Error interno'})
+  }
+
+  try {
+    let _edit = {
+      fecha_actualizacion: new Date(),
+      id_usuario: req.session.u_data.id, tipo: req.body.tipo,
+      nombre: req.body.nombre, descripcion: req.body.descripcion, fecha_nacimiento: req.body.fecha_nacimiento,
+      sexo: req.body?.sexo, raza: req.body?.raza
+    }
+    
+    await trx('mascotas_registradas').update(_edit).where({ 'id': req.body.id })
+    await trx.commit()
+    return res.status(200).send({ stat: true, text: 'Mascota Editada correctamente'})
+
+  } catch (error) {
+    trx.rollback()
+    console.log(error)
+    return res.status(200).send({ stat: false, text: 'Error interno'})
+  }
 
 })
 
