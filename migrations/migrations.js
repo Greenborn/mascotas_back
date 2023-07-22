@@ -24,6 +24,7 @@ exports.do_migrations = async function () {
           table.string('raza', 36)
           table.string('nombre', 255)
           table.string('id_imagen_principal', 36)
+          table.integer('perdida')
           table.string('descripcion', 512)
         })
     }

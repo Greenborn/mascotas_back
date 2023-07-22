@@ -16,12 +16,13 @@ router.use("/general", require("../routes/general"))
 
 var paths = [
   
+  { path: "/mascotas/perdidas_get_all" },
   { path: "/mascotas/get_all" },
   { path: "/mascotas/get" },
   { path: "/mascotas/agregar" },
   { path: "/mascotas/editar" },
   { path: "/mascotas/agregar_foto" },
-
+  
   { path: "/usuario/login" },
   { path: "/usuario/logout" },
   { path: "/usuario/registro" },

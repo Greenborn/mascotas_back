@@ -150,6 +150,27 @@ router.get('/get_all', async function (req, res) {
     }
 })
 
+router.get('/perdidas_get_all', async function (req, res) {
+  console.log('[MASCOTAS][perdidas_get_all] ',req.query)
+
+  try {
+    res.status(200).send({ stat: true, 
+      data: await global.knex("mascotas_registradas")
+              .leftOuterJoin('imagenes_mascotas', 'imagenes_mascotas.id_mascota', 'mascotas_registradas.id')
+              .select('mascotas_registradas.*', 'imagenes_mascotas.url as imagen')
+              .where({ 'perdida': 1 }),
+      imagenes: await global.knex("imagenes_mascotas")
+                .leftOuterJoin('mascotas_registradas', 'mascotas_registradas.id', 'imagenes_mascotas.id_mascota')
+                .select(['imagenes_mascotas.*', 'mascotas_registradas.id_usuario'])
+                .where({ 'perdida': 1 }),
+      registro_perdida: await global.knex("reportes_extravios").select()
+    })
+  } catch (error) {
+    console.log(error)
+    return res.status(200).send({ stat: false, text: 'Error interno'})
+  }
+})
+
 router.get('/get', async function (req, res) {
   console.log('[MASCOTAS][get] ',req.query)
 
