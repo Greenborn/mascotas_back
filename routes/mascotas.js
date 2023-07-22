@@ -132,10 +132,17 @@ router.get('/get_all', async function (req, res) {
     console.log('[MASCOTAS][get_all] ',req.query)
 
     try {
-      res.status(200).send({ stat: true, data: 
-        await global.knex("mascotas_registradas")
+      const id_user = req.session.u_data.id
+
+      res.status(200).send({ stat: true, 
+        data: await global.knex("mascotas_registradas")
                 .leftOuterJoin('imagenes_mascotas', 'imagenes_mascotas.id_mascota', 'mascotas_registradas.id')
                 .select('mascotas_registradas.*', 'imagenes_mascotas.url as imagen')
+                .where({ 'id_usuario': id_user }),
+        imagenes: await global.knex("imagenes_mascotas")
+                  .leftOuterJoin('mascotas_registradas', 'mascotas_registradas.id', 'imagenes_mascotas.id_mascota')
+                  .select(['imagenes_mascotas.*', 'mascotas_registradas.id_usuario'])
+                  .where({ 'id_usuario': id_user })
       })
     } catch (error) {
       console.log(error)
