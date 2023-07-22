@@ -27,6 +27,7 @@ var paths = [
   { path: "/usuario/logout" },
   { path: "/usuario/registro" },
   { path: "/usuario/verifica_email" },
+  { path: "/usuario/actualizar_datos" },
   { path: "/usuario/stat" },
   
   { path: "/general/preguntas_frecuentes"},

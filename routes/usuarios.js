@@ -128,3 +128,14 @@ router.get('/stat', async function (req, res) {
     console.log('[USUARIO][stat] ')
     return res.status(200).send({ stat: true, data: req.session })
 })
+
+router.put('/actualizar_datos', async function (req, res) {
+    console.log('[USUARIO][actualizar_datos] ', req.body)
+    
+    try {
+        return res.status(200).send({ stat: true, data: [], 'text':'funcionalidad no implementada' })
+    } catch (error) {
+        console.log(error)
+        return res.status(200).send({ stat: false, data: [], text: 'Error Interno' })
+    }
+})
