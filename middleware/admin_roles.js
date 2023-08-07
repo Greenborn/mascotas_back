@@ -20,6 +20,8 @@ var paths = [
   { path: "/mascotas/get_all" },
   { path: "/mascotas/get" },
   { path: "/mascotas/agregar" },
+  { path: "/mascotas/quitar" },
+  { path: "/mascotas/def_foto_principal" },
   { path: "/mascotas/editar" },
   { path: "/mascotas/agregar_foto" },
   

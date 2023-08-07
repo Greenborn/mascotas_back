@@ -128,6 +128,62 @@ router.put('/editar', async function (req, res) {
 
 })
 
+router.put('/quitar', async function (req, res) {
+  console.log('[MASCOTAS][quitar] ',req.body)
+
+  if (!req.body?.id)
+    return res.status(200).send({ stat: false, text: 'Error interno' })
+
+  try {
+    var trx = await global.knex.transaction()
+  } catch (error) {
+    console.log(error)
+    return res.status(200).send({ stat: false, text: 'Error interno'})
+  }
+
+  try {
+    
+    return res.status(200).send({ stat: true, text: 'Mascota Eliminada correctamente'})
+
+  } catch (error) {
+    trx.rollback()
+    console.log(error)
+    return res.status(200).send({ stat: false, text: 'Error interno'})
+  }
+
+})
+
+router.put('/def_foto_principal', async function (req, res) {
+  console.log('[MASCOTAS][def_foto_principal] ',req.body)
+
+  if (!req.body?.id_mascota)
+    return res.status(200).send({ stat: false, text: 'Error interno' })
+
+  if (!req.body?.id_imagen)
+    return res.status(200).send({ stat: false, text: 'Error interno' })
+
+  
+  try {
+    let img_perfil_existe = await global.knex("imagenes_mascotas").select().where({
+      'id': req.body.id_imagen, 'id_mascota': req.body.id_mascota
+    }).first()
+
+    if (!img_perfil_existe) {
+      console.log('Imagen no encontrada')
+      return res.status(200).send({ stat: false, text: 'Error interno'})
+    } else {
+      console.log(666,img_perfil_existe)
+      await global.knex("mascotas_registradas").update({ 'id_imagen_principal': req.body.id_imagen, fecha_actualizacion: new Date() }).where({ 'id': req.body.id_mascota })
+      return res.status(200).send({ stat: true, text: 'Imagen de perfil definida correctamente'})
+    }
+
+  } catch (error) {
+    console.log(error)
+    return res.status(200).send({ stat: false, text: 'Error interno'})
+  }
+
+})
+
 router.get('/get_all', async function (req, res) {
     console.log('[MASCOTAS][get_all] ',req.query)
 
