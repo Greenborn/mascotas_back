@@ -87,6 +87,42 @@ exports.do_migrations = async function () {
         })
     }
 
+    if (! await hasTable("permisos")) {
+      console.log("Creo tabla permisos")
+      await global.knex.schema.createTable('permisos', function (table) {
+        table.primary(["id"])
+        table.string('id', 36)
+        table.string('nombre',255)
+        table.string('descripcion',1024)
+        table.datetime('fecha_creado')
+        table.datetime('fecha_modificado')
+      })
+    }
+
+    if (! await hasTable("roles")) {
+      console.log("Creo tabla roles")
+      await global.knex.schema.createTable('roles', function (table) {
+        table.primary(["id"])
+        table.string('id', 36)
+        table.string('nombre',255)
+        table.string('descripcion',1024)
+        table.datetime('fecha_creado')
+        table.datetime('fecha_modificado')
+      })
+    }
+
+    if (! await hasTable("permisos_roles")) {
+      console.log("Creo tabla permisos_roles")
+      await global.knex.schema.createTable('permisos_roles', function (table) {
+        table.primary(["id"])
+        table.string('id', 36)
+        table.string('id_permiso',36)
+        table.string('id_rol',36)
+        table.datetime('fecha_creado')
+        table.datetime('fecha_modificado')
+      })
+    }
+
     if (! await hasTable("imagenes_usuarios")) {
         console.log("Creo tabla imagenes_usuarios")
         await global.knex.schema.createTable('imagenes_usuarios', function (table) {
