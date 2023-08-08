@@ -81,7 +81,7 @@ router.post('/agregar', async function (req, res) {
 
     if (lst_imgs.length > 0)
       _insert['id_imagen_principal'] = lst_imgs[0].id
-    
+
     await trx('mascotas_registradas').insert(_insert)
     await trx.commit()
     return res.status(200).send({ stat: true, text: 'Mascota registrada correctamente'})
@@ -206,8 +206,7 @@ router.get('/get_all', async function (req, res) {
 
       res.status(200).send({ stat: true, 
         data: await global.knex("mascotas_registradas")
-                .leftOuterJoin('imagenes_mascotas', 'imagenes_mascotas.id_mascota', 'mascotas_registradas.id')
-                .select('mascotas_registradas.*', 'imagenes_mascotas.url as imagen')
+                .select()
                 .where({ 'id_usuario': id_user }),
         imagenes: await global.knex("imagenes_mascotas")
                   .leftOuterJoin('mascotas_registradas', 'mascotas_registradas.id', 'imagenes_mascotas.id_mascota')
