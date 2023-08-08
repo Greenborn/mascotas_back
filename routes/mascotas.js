@@ -128,7 +128,7 @@ router.put('/editar', async function (req, res) {
 
 })
 
-router.put('/quitar', async function (req, res) {
+router.delete('/quitar', async function (req, res) {
   console.log('[MASCOTAS][quitar] ',req.body)
 
   if (!req.body?.id)
@@ -142,9 +142,17 @@ router.put('/quitar', async function (req, res) {
   }
 
   try {
+    let del_masco     = await trx('mascotas_registradas').delete().where({ 'id': req.body.id })
+    let del_img_masco = await trx("imagenes_mascotas").delete().where({ 'id_mascota': req.body.id })
     
-    return res.status(200).send({ stat: true, text: 'Mascota Eliminada correctamente'})
-
+    if ( del_masco && del_img_masco ) {
+      await trx.commit()
+      return res.status(200).send({ stat: true, text: 'Mascota Eliminada correctamente'})
+    } else {
+      trx.rollback()
+      console.log( del_masco && del_img_masco )
+      return res.status(200).send({ stat: true, text: 'No se pudo eliminar'})
+    }
   } catch (error) {
     trx.rollback()
     console.log(error)
