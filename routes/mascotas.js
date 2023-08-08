@@ -62,6 +62,7 @@ router.post('/agregar', async function (req, res) {
     let imagenes = []
     if (req.body?.imagenes) imagenes = req.body?.imagenes
 
+    let lst_imgs = []
     for (let c=0; c < imagenes.length; c++){
       let base64Image = String(imagenes[c].base64).split(';base64,').pop();
       let extension = imagenes[c].type.split('age/')[1]
@@ -71,11 +72,16 @@ router.post('/agregar', async function (req, res) {
         console.log('File created');
       });
 
-      await trx('imagenes_mascotas').insert({
+      const _i_i = {
         'id': uuid.v4(), 'url': ruta, 'id_mascota': id_mascota
-      })
+      }
+      lst_imgs.push(_i_i)
+      await trx('imagenes_mascotas').insert(_i_i)
     }
 
+    if (lst_imgs.length > 0)
+      _insert['id_imagen_principal'] = lst_imgs[0].id
+    
     await trx('mascotas_registradas').insert(_insert)
     await trx.commit()
     return res.status(200).send({ stat: true, text: 'Mascota registrada correctamente'})
