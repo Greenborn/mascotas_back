@@ -5,32 +5,6 @@ module.exports = router
 
 const uuid = require("uuid")
 
-router.post('/agregar_foto', async function (req, res) {
-  console.log('[MASCOTAS][agregar_foto] ',req.body)
-
-  try {
-
-
-    return res.status(200).send({ stat: true, text: 'Foto guardada correctamente'})
-  } catch (error) {
-    console.log(error)
-    return res.status(200).send({ stat: false, text: 'Error interno'})
-  }
-}) 
-
-router.post('/eliminar_foto', async function (req, res) {
-  console.log('[MASCOTAS][eliminar_foto] ',req.body)
-
-  try {
-
-
-    return res.status(200).send({ stat: true, text: 'Foto eliminada correctamente'})
-  } catch (error) {
-    console.log(error)
-    return res.status(200).send({ stat: false, text: 'Error interno'})
-  }
-})
-
 router.post('/agregar', async function (req, res) {
   console.log('[MASCOTAS][agregar] ',req.body)
 
@@ -121,7 +95,31 @@ router.put('/editar', async function (req, res) {
       nombre: req.body.nombre, descripcion: req.body.descripcion, fecha_nacimiento: req.body.fecha_nacimiento,
       sexo: req.body?.sexo, raza: req.body?.raza
     }
-    
+
+    let imagenes = []
+    if (req.body?.imagenes) imagenes = req.body?.imagenes
+
+    let lst_imgs = []
+    let proms_imgs = []
+    for (let c=0; c < imagenes.length; c++){
+      if (imagenes[c]?.base64 != undefined){
+        let base64Image = String(imagenes[c].base64).split(';base64,').pop();
+        let extension = imagenes[c].type.split('age/')[1]
+
+        const ruta = 'public/img/'+new Date().getTime()+req.session.u_data.id+'.'+extension
+        fs.writeFile(ruta, base64Image, {encoding: 'base64'}, function(err) {
+          console.log('File created');
+        });
+
+        const _i_i = {
+          'id': uuid.v4(), 'url': ruta, 'id_mascota': req.body.id
+        }
+        lst_imgs.push(_i_i)
+        proms_imgs.push( trx('imagenes_mascotas').insert(_i_i) )
+      }
+    }
+    await Promise.all( proms_imgs )
+
     await trx('mascotas_registradas').update(_edit).where({ 'id': req.body.id })
     await trx.commit()
     return res.status(200).send({ stat: true, text: 'Mascota Editada correctamente'})

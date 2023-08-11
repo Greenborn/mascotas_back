@@ -23,7 +23,6 @@ var paths = [
   { path: "/mascotas/quitar" },
   { path: "/mascotas/def_foto_principal" },
   { path: "/mascotas/editar" },
-  { path: "/mascotas/agregar_foto" },
   
   { path: "/usuario/login" },
   { path: "/usuario/logout" },
