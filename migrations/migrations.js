@@ -132,6 +132,53 @@ exports.do_migrations = async function () {
           table.string('id_usuario',36)
         })
     }
+
+  await addRecordIfNotExist("roles", { id: 'DUENIO_MASCOTA', nombre: 'DUENIO_MASCOTA', descripcion: 'Asignado a dueño mascota', fecha_creado: new Date(), fecha_modificado: new Date() },
+    { busqueda_ignorar_campo: ['fecha_creado', 'fecha_modificado'] })
+  
+  await addRecordIfNotExist("permisos", { id: 'PERDIDA_ALL', nombre: 'PERDIDA_GET_ALL', 
+    descripcion: 'Obtener listado Mascotas Perdidas', fecha_creado: new Date(), fecha_modificado: new Date() },
+    { busqueda_ignorar_campo: ['fecha_creado', 'fecha_modificado'] })
+  await addRecordIfNotExist("permisos_roles", { id: uuid.v4(), id_permiso: 'PERDIDA_ALL', id_rol: 'DUENIO_MASCOTA', fecha_creado: new Date(), fecha_modificado: new Date() },
+    { busqueda_ignorar_campo: ['fecha_creado', 'fecha_modificado', 'id'] })
+
+  await addRecordIfNotExist("permisos", { id: 'MASCOTAS_C_USER_ALL', nombre: 'MASCOTAS_C_USER_ALL', 
+    descripcion: 'Obtener listado de Mascotas - Usuario Actual', fecha_creado: new Date(), fecha_modificado: new Date() },
+    { busqueda_ignorar_campo: ['fecha_creado', 'fecha_modificado'] })
+  await addRecordIfNotExist("permisos_roles", { id: uuid.v4(), id_permiso: 'MASCOTAS_C_USER_ALL', id_rol: 'DUENIO_MASCOTA', fecha_creado: new Date(), fecha_modificado: new Date() },
+    { busqueda_ignorar_campo: ['fecha_creado', 'fecha_modificado', 'id'] })
+
+  await addRecordIfNotExist("permisos", { id: 'MASCOTAS_C_USER_ONE', nombre: 'MASCOTAS_C_USER_ONE', 
+    descripcion: 'Obtener Info de una Mascota - Usuario Actual', fecha_creado: new Date(), fecha_modificado: new Date() },
+    { busqueda_ignorar_campo: ['fecha_creado', 'fecha_modificado'] })
+  await addRecordIfNotExist("permisos_roles", { id: uuid.v4(), id_permiso: 'MASCOTAS_C_USER_ONE', id_rol: 'DUENIO_MASCOTA', fecha_creado: new Date(), fecha_modificado: new Date() },
+    { busqueda_ignorar_campo: ['fecha_creado', 'fecha_modificado', 'id'] })
+
+  await addRecordIfNotExist("permisos", { id: 'MASCOTAS_C_USER_ADD', nombre: 'MASCOTAS_C_USER_ADD', 
+    descripcion: 'Agregar Mascota - Usuario Actual', fecha_creado: new Date(), fecha_modificado: new Date() },
+    { busqueda_ignorar_campo: ['fecha_creado', 'fecha_modificado'] })
+  await addRecordIfNotExist("permisos_roles", { id: uuid.v4(), id_permiso: 'MASCOTAS_C_USER_ADD', id_rol: 'DUENIO_MASCOTA', fecha_creado: new Date(), fecha_modificado: new Date() },
+  { busqueda_ignorar_campo: ['fecha_creado', 'fecha_modificado', 'id'] })
+
+  await addRecordIfNotExist("permisos", { id: 'MASCOTAS_C_USER_DEL', nombre: 'MASCOTAS_C_USER_DEL', 
+    descripcion: 'Quitar Mascota - Usuario Actual', fecha_creado: new Date(), fecha_modificado: new Date() },
+    { busqueda_ignorar_campo: ['fecha_creado', 'fecha_modificado'] })
+  await addRecordIfNotExist("permisos_roles", { id: uuid.v4(), id_permiso: 'MASCOTAS_C_USER_DEL', id_rol: 'DUENIO_MASCOTA', fecha_creado: new Date(), fecha_modificado: new Date() },
+    { busqueda_ignorar_campo: ['fecha_creado', 'fecha_modificado', 'id'] })
+
+  await addRecordIfNotExist("permisos", { id: 'MASCO_C_USER_CIMG', nombre: 'MASCO_C_USER_CIMG', 
+    descripcion: 'Cambiar imagen de perfil de Mascota - Usuario Actual', fecha_creado: new Date(), fecha_modificado: new Date() },
+    { busqueda_ignorar_campo: ['fecha_creado', 'fecha_modificado'] })
+  await addRecordIfNotExist("permisos_roles", { id: uuid.v4(), id_permiso: 'MASCO_C_USER_CIMG', id_rol: 'DUENIO_MASCOTA', fecha_creado: new Date(), fecha_modificado: new Date() }
+  ,{ busqueda_ignorar_campo: ['fecha_creado', 'fecha_modificado', 'id'] })
+
+  await addRecordIfNotExist("permisos", { id: 'MASCOTAS_C_USER_EDIT', nombre: 'MASCOTAS_C_USER_EDIT', 
+    descripcion: 'Editar Mascota - Usuario Actual', fecha_creado: new Date(), fecha_modificado: new Date() },
+    { busqueda_ignorar_campo: ['fecha_creado', 'fecha_modificado'] })
+  await addRecordIfNotExist("permisos_roles", 
+    { id: uuid.v4(), id_permiso: 'MASCOTAS_C_USER_EDIT', id_rol: 'DUENIO_MASCOTA', fecha_creado: new Date(), fecha_modificado: new Date() }
+    ,{ busqueda_ignorar_campo: ['fecha_creado', 'fecha_modificado', 'id'] })
+
 }
 
 async function hasColumn(table_name, column) {
@@ -151,4 +198,25 @@ async function hasTable(table_name) {
         })
 
     })
+}
+
+async function addRecordIfNotExist(table_name, record, options = {}) {
+  let record_f = { ...record }
+  if (options.busqueda_ignorar_campo) {
+    for (let c = 0; c < options.busqueda_ignorar_campo.length; c++) {
+      delete record_f[options.busqueda_ignorar_campo[c]]
+    }
+  }
+
+  if (! await hasRecords(table_name, record_f)) {
+    await knex(table_name).insert(record)
+    console.log('Agregando registro - tabla ' + table_name, record)
+  }
+}
+
+async function hasRecords(table_name, where_cond) {
+  return new Promise(async (resolve, reject) => {
+    let regs = await knex(table_name).select().where(where_cond)
+    resolve(regs.length > 0)
+  })
 }
