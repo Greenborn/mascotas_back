@@ -87,8 +87,16 @@ router.post('/registro', async function (req, res) {
     }
 
     try {
+        var trx = await global.knex.transaction()
+    } catch (error) {
+        console.log(error)
+        return res.status(200).send({ stat: false, text: 'Error interno'})
+    }
+
+    try {
         let usuario_existe = await global.knex("usuario").select().where({ email: req.body.email }).orWhere({ nombre: req.body.nombre }).first()
         if (usuario_existe) {
+            await trx.rollback()
             return res.status(200).send({ stat: false, data: [], text: '¡Ya existe un usuario con dicho nombre / email!' })
         } else {
             let _insert = {
@@ -103,11 +111,19 @@ router.post('/registro', async function (req, res) {
                 verif_code: uuid.v4(),
                 fecha_verif_code: new Date(),
             }
-            await global.knex("usuario").insert(_insert)
+            await trx("usuario").insert(_insert)
+            await trx("usuarios_roles").insert({
+                id: uuid.v4(),
+                id_usuario: _insert.id,
+                id_rol: 'DUENIO_MASCOTA',
+                fecha_creado: new Date(), fecha_modificado: new Date()
+            })
             console.log('Se crea nuevo usuario ', _insert)
+            await trx.commit()
             return res.status(200).send({ stat: true, data: [] })
         }
     } catch (error) {
+        trx.rollback()
         console.log(error)
         return res.status(200).send({ stat: false, data: [], text: 'Error Interno' })
     }
