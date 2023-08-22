@@ -5,6 +5,36 @@ module.exports = router
 
 const uuid = require("uuid")
 
+
+router.post('/reportar_extravio', async function (req, res) {
+  console.log('[MASCOTAS][reportar_extravio] ',req.body)
+
+  if (!req.body?.datos_busqueda)
+    return res.status(200).send({ stat: false, text: 'Es necesario completar los Datos de Búsqueda' })
+  
+  if (!req.body?.id_mascota)
+    return res.status(200).send({ stat: false, text: 'Es necesario seleccionar una mascota' })
+  
+  try {
+    const id_user = req.session.u_data.id
+    let existe = await global.knex('mascotas_registradas').select().where({ 'id': req.body.id_mascota, id_usuario: id_user }).first()
+    if (!existe)
+      return res.status(200).send({ stat: false, text: 'Ocurrió un error interno' })
+    else {
+      await global.knex('reportes_extravios').insert({
+        id: uuid.v4(),
+        comentario: req.body?.datos_busqueda,
+        id_mascota: req.body?.id_mascota,
+        fecha_registro: new Date()
+      })
+      return res.status(200).send({ stat: true, text: 'Extravío reportado' })
+    }
+  } catch (error) {
+    console.log(error)
+    return res.status(200).send({ stat: false, text: 'Ocurrió un error interno' })
+  }
+})
+
 router.post('/agregar', async function (req, res) {
   console.log('[MASCOTAS][agregar] ',req.body)
 
