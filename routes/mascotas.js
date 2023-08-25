@@ -29,7 +29,7 @@ router.post('/reportar_extravio', async function (req, res) {
         id_mascota: req.body?.id_mascota,
         fecha_registro: new Date()
       })
-      let update = await db_trx('reportes_extravios').update({ perdida: 1 }).where({ 'id': req.body.id_mascota, id_usuario: id_user })
+      let update = await db_trx('mascotas_registradas').update({ perdida: 1 }).where({ 'id': req.body.id_mascota, id_usuario: id_user })
       if (insert && update ){
         await db_trx.commit()
         return res.status(200).send({ stat: true, text: 'Extravío reportado' })
@@ -69,7 +69,7 @@ router.post('/agregar', async function (req, res) {
     let _insert = {
       id: id_mascota, fecha_registro: new Date(), fecha_actualizacion: new Date(),
       id_usuario: req.session.u_data.id, tipo: req.body.tipo,
-      nombre: req.body.nombre, descripcion: req.body.descripcion, fecha_nacimiento: req.body.fecha_nacimiento,
+      nombre: req.body.nombre, descripcion: req.body.descripcion, fecha_nacimiento: new Date(req.body.fecha_nacimiento),
       sexo: req.body?.sexo, raza: req.body?.raza
     }
 

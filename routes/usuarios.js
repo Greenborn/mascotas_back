@@ -104,7 +104,7 @@ router.post('/registro', async function (req, res) {
                 nombre: req.body.nombre,
                 email: req.body.email,
                 descripcion: req.body.descripcion,
-                fecha_nacimiento: req.body.fecha_nacimiento,
+                fecha_nacimiento: new Date(req.body.fecha_nacimiento),
                 fecha_creado: new Date(),
                 fecha_modificado: new Date(),
                 pass: await bcrypt.hash(req.body.pass, 10),
