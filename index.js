@@ -33,9 +33,24 @@ api.use(Session({
 
 // DATABASE
 const knex = require('knex')({
-    client: 'sqlite3',
+    client: 'mysql2',
     connection: {
-      filename: process.env.SQLiteDB
+        host: process.env.mysql_host,
+        port: process.env.mysql_port,
+        user: process.env.mysql_user,
+        password: process.env.mysql_password,
+        database: process.env.mysql_database,
+        supportBigNumbers: true,
+        bigNumberStrings: true,
+        typeCast: function (field, next) {
+            //console.log(field.table, field.name, field.type)
+            if (field.type == "NEWDECIMAL") {
+                //console.log("field", field)
+                var value = field.string();
+                return (value === null) ? null : Number(value);
+            }
+            return next();
+        }
     },
     useNullAsDefault: true,
 });

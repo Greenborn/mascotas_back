@@ -4,7 +4,7 @@ global.CONFIG = CONFIG.parsed
 console.log("> .env")
 const ENV_REQUIRED = [
     "cors_origin",
-    "SQLiteDB",
+    "mysql_host","mysql_port", "mysql_user", "mysql_password", "mysql_database",
     "service_port_admin"
 ]
 
