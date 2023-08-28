@@ -34,9 +34,10 @@ exports.check_roles = function (request, response, next, paths) {
   }
 
   //Validacion de permisos
+  console.log(session)
   for (let i = 0; i < paths.length; i++) {
     if (request.path == paths[i].path)
-      for (let c = 0; c < session.u_data.permisos.length; c++) {
+      for (let c = 0; c < session.u_data?.permisos?.length; c++) {
         for (let d = 0; d < paths[i].permisos.length; d++) {
           if (session.u_data.permisos[c] === paths[i].permisos[d]) {
             if (session.u_data.forzar_cambio_clave == 1 && request.path !== "/auth/password_change") {

@@ -16,15 +16,15 @@ router.use("/general", require("../routes/general"))
 
 var paths = [
   
-  { path: "/mascotas/perdidas_get_all" },
-  { path: "/mascotas/get_all" },
-  { path: "/mascotas/get" },
-  { path: "/mascotas/agregar" },
-  { path: "/mascotas/quitar" },
-  { path: "/mascotas/def_foto_principal" },
-  { path: "/mascotas/editar" },
-  { path: "/mascotas/reportar_extravio" },
-  { path: "/mascotas/reportar_avistamiento" },
+  { path: "/mascotas/perdidas_get_all", permisos: ['PERDIDA_GET_ALL'] },
+  { path: "/mascotas/get_all", permisos: ['MASCOTAS_C_USER_ALL'] },
+  { path: "/mascotas/get", permisos: ['MASCOTAS_C_USER_ONE'] },
+  { path: "/mascotas/agregar", permisos: ['MASCOTAS_C_USER_ALL'] },
+  { path: "/mascotas/quitar", permisos: ['MASCOTAS_C_USER_DEL'] },
+  { path: "/mascotas/def_foto_principal", permisos: ['MASCO_C_USER_CIMG']  },
+  { path: "/mascotas/editar", permisos: ['MASCOTAS_C_USER_EDIT']  },
+  { path: "/mascotas/reportar_extravio", permisos: ['MASCO_REP_EXTRAVIO'] },
+  { path: "/mascotas/reportar_avistamiento", permisos: ['MASCO_REP_AVISTAMIENTO']  },
   
   { path: "/usuario/login" },
   { path: "/usuario/logout" },

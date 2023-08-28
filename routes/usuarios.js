@@ -24,7 +24,16 @@ router.post('/login', async function (req, res) {
                 delete usuario.pass
 
                 req.session.isLogged = true
+                let permisos = await global.knex("permisos")
+                                        .select('permisos.nombre')
+                                        .join('permisos_roles', 'permisos_roles.id_permiso', 'permisos.id')
+                                        .join('usuarios_roles', 'usuarios_roles.id_rol', 'permisos_roles.id_rol')
+                                        .where({ 'id_usuario': usuario.id })
+                for (let c =0; c < permisos.length; c ++)
+                    permisos[c] = permisos[c].nombre
+                usuario['permisos'] = permisos
                 req.session.u_data = { ...usuario }
+                
                 req.session.save()
 
                 return res.status(200).send({ stat: true, data: usuario })
