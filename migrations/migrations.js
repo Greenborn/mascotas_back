@@ -190,6 +190,33 @@ exports.do_migrations = async function () {
       table.datetime('fecha_modificado')
     })
   }
+
+  if (! await hasTable("resportes_avistamiento")) {
+    console.log("Creo tabla resportes_avistamiento")
+    await global.knex.schema.createTable('resportes_avistamiento', function (table) {
+      table.primary(["id"])
+      table.string('id', 36)
+      table.string('id_usuario',36)
+      table.string('id_mascota',36)
+      table.string('id_reporte',36)
+      table.string('descripcion',1024)
+      table.string('ubicacion',255)
+      table.datetime('fecha_creado')
+    })
+  }
+
+  if (! await hasTable("resportes_avistamiento_imagenes")) {
+    console.log("Creo tabla resportes_avistamiento_imagenes")
+    await global.knex.schema.createTable('resportes_avistamiento_imagenes', function (table) {
+      table.primary(["id"])
+      table.string('id', 36)
+      table.string('id_reporte',36)
+      table.string('id_avistamiento',36)
+      table.string('path',512)
+      table.string('mime_type',255)
+      table.datetime('fecha_creado')
+    })
+  }
 }
 
 async function hasColumn(table_name, column) {
