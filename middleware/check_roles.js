@@ -34,7 +34,7 @@ exports.check_roles = function (request, response, next, paths) {
   }
 
   //Validacion de permisos
-  console.log(session)
+  
   for (let i = 0; i < paths.length; i++) {
     if (request.path == paths[i].path)
       for (let c = 0; c < session.u_data?.permisos?.length; c++) {
