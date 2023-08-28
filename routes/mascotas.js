@@ -8,6 +8,60 @@ const uuid = require("uuid")
 router.post('/reportar_avistamiento', async function (req, res) {
   console.log('[MASCOTAS][reportar_avistamiento] ',req.body)
 
+  if (!req.body?.descripcion)
+    return res.status(200).send({ stat: false, text: 'Es necesario completar la descripción' })
+
+  if (!req.body?.id)
+    return res.status(200).send({ stat: false, text: 'Es necesario completar la id_reporte' })
+
+  try {
+    var trx_ra = await global.knex.transaction()
+  } catch (error) {
+    console.log(error)
+    return res.status(200).send({ stat: false, text: 'Error interno'})
+  }
+
+  try {
+    const id_user = req.session.u_data.id
+
+    let busqueda_reporte = await global.knex('reportes_extravios').select().where({ 'id': req.body?.id }).first()
+    if (!busqueda_reporte){
+      trx_ra.rollback()
+      console.log('reporte no encontrado')
+      return res.status(200).send({ stat: false, text: 'Ocurrió un error interno' })
+    } else {
+      let busqueda_mascota = await global.knex('mascotas_registradas').select().where({ 'id': busqueda_reporte.id_mascota }).first()
+      if (!busqueda_mascota){
+        trx_ra.rollback()
+        console.log('reporte no encontrado')
+        return res.status(200).send({ stat: false, text: 'Mascota no encontrada' })
+      } else {
+        let insert = await trx_ra('resportes_avistamiento').insert({
+          id: uuid.v4(),
+          descripcion: req.body?.descripcion,
+          id_reporte: req.body?.id,
+          fecha_creado: new Date(),
+          ubicacion: '',
+          id_mascota: busqueda_reporte.id_mascota,
+          id_usuario: id_user,
+        })
+        if (insert){
+          await trx_ra.commit()
+          return res.status(200).send({ stat: true, text: 'Reporte de avistamiento registrado correctamente.' })
+        } else {
+          trx_ra.rollback()
+          return res.status(200).send({ stat: false, text: 'No se pudo ingresar reporte de avistamiento.' })
+        }
+      }
+      
+    }
+
+  } catch (error) {
+    console.log(error)
+    trx_ra.rollback()
+    return res.status(200).send({ stat: false, text: 'Ocurrió un error interno' })
+  }
+
   return res.status(200).send({ stat: false, text: 'Funcionalidad aún no implementada' })
 })
 
