@@ -217,6 +217,12 @@ exports.do_migrations = async function () {
       table.datetime('fecha_creado')
     })
   }
+
+  await addRecordIfNotExist("permisos", { id: 'MASCO_REP_AVISTAMIENTO', nombre: 'MASCO_REP_AVISTAMIENTO', 
+    descripcion: 'Reportar avistamiento - Usuario Actual', fecha_creado: new Date(), fecha_modificado: new Date() },
+    { busqueda_ignorar_campo: ['fecha_creado', 'fecha_modificado'] })
+  await addRecordIfNotExist("permisos_roles", { id: uuid.v4(), id_permiso: 'MASCO_REP_AVISTAMIENTO', id_rol: 'DUENIO_MASCOTA', fecha_creado: new Date(), fecha_modificado: new Date() }
+  ,{ busqueda_ignorar_campo: ['fecha_creado', 'fecha_modificado', 'id'] })
 }
 
 async function hasColumn(table_name, column) {

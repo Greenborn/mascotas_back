@@ -24,6 +24,7 @@ var paths = [
   { path: "/mascotas/def_foto_principal" },
   { path: "/mascotas/editar" },
   { path: "/mascotas/reportar_extravio" },
+  { path: "/mascotas/reportar_avistamiento" },
   
   { path: "/usuario/login" },
   { path: "/usuario/logout" },

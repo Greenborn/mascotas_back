@@ -5,6 +5,11 @@ module.exports = router
 
 const uuid = require("uuid")
 
+router.post('/reportar_avistamiento', async function (req, res) {
+  console.log('[MASCOTAS][reportar_avistamiento] ',req.body)
+
+  return res.status(200).send({ stat: false, text: 'Funcionalidad aún no implementada' })
+})
 
 router.post('/reportar_extravio', async function (req, res) {
   console.log('[MASCOTAS][reportar_extravio] ',req.body)
