@@ -33,7 +33,9 @@ var paths = [
   { path: "/usuario/verifica_email" },
   { path: "/usuario/actualizar_datos" },
   { path: "/usuario/stat" },
+
   { path: "/usuario/get_notificaciones", permisos: ['MASCO_MIN'] },
+  { path: "/usuario/notificacion_leida", permisos: ['MASCO_MIN'] },
   
   { path: "/general/preguntas_frecuentes"},
   { path: "/general/legal"}
