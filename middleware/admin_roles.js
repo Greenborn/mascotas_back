@@ -26,6 +26,7 @@ var paths = [
   { path: "/mascotas/editar", permisos: ['MASCOTAS_C_USER_EDIT']  },
   { path: "/mascotas/reportar_extravio", permisos: ['MASCO_REP_EXTRAVIO'] },
   { path: "/mascotas/reportar_avistamiento", permisos: ['MASCO_REP_AVISTAMIENTO']  },
+  { path: "/mascotas/fue_encontrada", permisos: ['MASCO_MIN']  },
   
   { path: "/usuario/login" },
   { path: "/usuario/logout" },

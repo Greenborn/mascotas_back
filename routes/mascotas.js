@@ -157,7 +157,7 @@ router.post('/agregar', async function (req, res) {
       });
 
       const _i_i = {
-        'id': uuid.v4(), 'url': ruta, 'id_mascota': id_mascota
+        'id': uuid.v4(), 'url': ruta, 'id_mascota': id_mascota, 'id_usuario': req.session.u_data.id
       }
       lst_imgs.push(_i_i)
       await trx('imagenes_mascotas').insert(_i_i)
@@ -222,7 +222,7 @@ router.put('/editar', async function (req, res) {
         });
 
         const _i_i = {
-          'id': uuid.v4(), 'url': ruta, 'id_mascota': req.body.id
+          'id': uuid.v4(), 'url': ruta, 'id_mascota': req.body.id, 'id_usuario': req.session.u_data.id
         }
         lst_imgs.push(_i_i)
         proms_imgs.push( trx('imagenes_mascotas').insert(_i_i) )
@@ -230,7 +230,37 @@ router.put('/editar', async function (req, res) {
     }
     await Promise.all( proms_imgs )
 
-    await trx('mascotas_registradas').update(_edit).where({ 'id': req.body.id })
+    await trx('mascotas_registradas').update(_edit).where({ 'id': req.body.id, 'id_usuario': req.session.u_data.id })
+    await trx.commit()
+    return res.status(200).send({ stat: true, text: 'Mascota Editada correctamente'})
+
+  } catch (error) {
+    trx.rollback()
+    console.log(error)
+    return res.status(200).send({ stat: false, text: 'Error interno'})
+  }
+
+})
+
+router.put('/fue_encontrada', async function (req, res) {
+  console.log('[MASCOTAS][editar] ',req.body)
+
+  if (!req.body?.id)
+    return res.status(200).send({ stat: false, text: 'Error interno' })
+
+  try {
+    var trx = await global.knex.transaction()
+  } catch (error) {
+    console.log(error)
+    return res.status(200).send({ stat: false, text: 'Error interno'})
+  }
+
+  try {
+    let _edit = {
+      perdida: 0
+    }
+
+    await trx('mascotas_registradas').update(_edit).where({ 'id': req.body.id, 'id_usuario': req.session.u_data.id })
     await trx.commit()
     return res.status(200).send({ stat: true, text: 'Mascota Editada correctamente'})
 
@@ -256,8 +286,8 @@ router.delete('/quitar', async function (req, res) {
   }
 
   try {
-    let del_masco     = await trx('mascotas_registradas').delete().where({ 'id': req.body.id })
-    let del_img_masco = await trx("imagenes_mascotas").delete().where({ 'id_mascota': req.body.id })
+    let del_masco     = await trx('mascotas_registradas').delete().where({ 'id': req.body.id, 'id_usuario': req.session.u_data.id })
+    let del_img_masco = await trx("imagenes_mascotas").delete().where({ 'id_mascota': req.body.id, 'id_usuario': req.session.u_data.id })
     
     if ( del_masco && del_img_masco ) {
       await trx.commit()
@@ -287,7 +317,7 @@ router.put('/def_foto_principal', async function (req, res) {
   
   try {
     let img_perfil_existe = await global.knex("imagenes_mascotas").select().where({
-      'id': req.body.id_imagen, 'id_mascota': req.body.id_mascota
+      'id': req.body.id_imagen, 'id_mascota': req.body.id_mascota, 'id_usuario': req.session.u_data.id
     }).first()
 
     if (!img_perfil_existe) {
@@ -295,7 +325,8 @@ router.put('/def_foto_principal', async function (req, res) {
       return res.status(200).send({ stat: false, text: 'Error interno'})
     } else {
       console.log(666,img_perfil_existe)
-      await global.knex("mascotas_registradas").update({ 'id_imagen_principal': req.body.id_imagen, fecha_actualizacion: new Date() }).where({ 'id': req.body.id_mascota })
+      await global.knex("mascotas_registradas").update({ 'id_imagen_principal': req.body.id_imagen, fecha_actualizacion: new Date() })
+        .where({ 'id': req.body.id_mascota, 'id_usuario': req.session.u_data.id })
       return res.status(200).send({ stat: true, text: 'Imagen de perfil definida correctamente'})
     }
 
@@ -319,7 +350,7 @@ router.get('/get_all', async function (req, res) {
         imagenes: await global.knex("imagenes_mascotas")
                   .leftOuterJoin('mascotas_registradas', 'mascotas_registradas.id', 'imagenes_mascotas.id_mascota')
                   .select(['imagenes_mascotas.*', 'mascotas_registradas.id_usuario'])
-                  .where({ 'id_usuario': id_user })
+                  .where({ 'imagenes_mascotas.id_usuario': id_user })
       })
     } catch (error) {
       console.log(error)
@@ -357,7 +388,7 @@ router.get('/get', async function (req, res) {
   try {
     var mascota = await global.knex("mascotas_registradas")
                   .select().where({ id: req.query.id }).first()
-    mascota['imagenes'] = await global.knex("imagenes_mascotas").select().where({ id_mascota: req.query.id })
+    mascota['imagenes'] = await global.knex("imagenes_mascotas").select().where({ id_mascota: req.query.id, 'id_usuario': req.session.u_data.id })
   } catch (error) {
     console.log(error)
     return res.status(200).send({ stat: false, text: 'Error interno'})

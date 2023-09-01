@@ -36,6 +36,7 @@ exports.do_migrations = async function () {
           table.string('id', 36)
           table.string('url',255)
           table.string('id_mascota',36)
+          table.string('id_usuarios',36)
         })
     }
 
