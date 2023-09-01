@@ -229,6 +229,26 @@ exports.do_migrations = async function () {
     { busqueda_ignorar_campo: ['fecha_creado', 'fecha_modificado'] })
   await addRecordIfNotExist("permisos_roles", { id: uuid.v4(), id_permiso: 'MASCO_REP_EXTRAVIO', id_rol: 'DUENIO_MASCOTA', fecha_creado: new Date(), fecha_modificado: new Date() }
   ,{ busqueda_ignorar_campo: ['fecha_creado', 'fecha_modificado', 'id'] })
+
+  await addRecordIfNotExist("permisos", { id: 'MASCO_MIN', nombre: 'MASCO_MIN', 
+    descripcion: 'Permisos minimos para usuarios de tipo dueño mascota', fecha_creado: new Date(), fecha_modificado: new Date() },
+    { busqueda_ignorar_campo: ['fecha_creado', 'fecha_modificado'] })
+  await addRecordIfNotExist("permisos_roles", { id: uuid.v4(), id_permiso: 'MASCO_MIN', id_rol: 'DUENIO_MASCOTA', fecha_creado: new Date(), fecha_modificado: new Date() }
+  ,{ busqueda_ignorar_campo: ['fecha_creado', 'fecha_modificado', 'id'] })
+
+  if (! await hasTable("notificaciones")) {
+    console.log("Creo tabla notificaciones")
+    await global.knex.schema.createTable('notificaciones', function (table) {
+      table.primary(["id"])
+      table.string('id', 36)
+      table.string('id_usuario',36)
+      table.integer('leida', 1)
+      table.string('titulo',100)
+      table.string('contenido',2048)
+      table.string('meta_data',2048)
+      table.datetime('fecha_creado')
+    })
+  }
 }
 
 async function hasColumn(table_name, column) {

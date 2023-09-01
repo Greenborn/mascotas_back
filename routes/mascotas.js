@@ -45,6 +45,15 @@ router.post('/reportar_avistamiento', async function (req, res) {
           id_mascota: busqueda_reporte.id_mascota,
           id_usuario: id_user,
         })
+        await trx_ra('notificaciones').insert({
+          id: uuid.v4(),
+          id_usuario: busqueda_mascota.id_usuario,
+          leida: 0,
+          titulo: 'Reporte de Aparición',
+          contenido: req.body?.descripcion,
+          meta_data: '{}',
+          fecha_creado: new Date()
+        })
         if (insert){
           await trx_ra.commit()
           return res.status(200).send({ stat: true, text: 'Reporte de avistamiento registrado correctamente.' })
