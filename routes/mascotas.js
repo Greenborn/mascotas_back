@@ -36,7 +36,7 @@ router.post('/reportar_avistamiento', async function (req, res) {
         console.log('reporte no encontrado')
         return res.status(200).send({ stat: false, text: 'Mascota no encontrada' })
       } else {
-        let insert = await trx_ra('resportes_avistamiento').insert({
+        const rep_avistamiento = {
           id: uuid.v4(),
           descripcion: req.body?.descripcion,
           id_reporte: req.body?.id,
@@ -44,14 +44,16 @@ router.post('/reportar_avistamiento', async function (req, res) {
           ubicacion: '',
           id_mascota: busqueda_reporte.id_mascota,
           id_usuario: id_user,
-        })
+        }
+        let insert = await trx_ra('resportes_avistamiento').insert(rep_avistamiento)
         await trx_ra('notificaciones').insert({
           id: uuid.v4(),
           id_usuario: busqueda_mascota.id_usuario,
           leida: 0,
+          archivada:0,
           titulo: 'Reporte de Aparición',
           contenido: req.body?.descripcion,
-          meta_data: '{}',
+          meta_data: JSON.stringify({ pet: busqueda_mascota, rep: rep_avistamiento }),
           fecha_creado: new Date()
         })
         if (insert){

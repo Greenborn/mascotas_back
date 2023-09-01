@@ -243,6 +243,7 @@ exports.do_migrations = async function () {
       table.string('id', 36)
       table.string('id_usuario',36)
       table.integer('leida', 1)
+      table.integer('archivada', 1)
       table.string('titulo',100)
       table.string('contenido',2048)
       table.string('meta_data',2048)
