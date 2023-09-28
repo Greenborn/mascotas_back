@@ -36,7 +36,7 @@ exports.do_migrations = async function () {
           table.string('id', 36)
           table.string('url',255)
           table.string('id_mascota',36)
-          table.string('id_usuarios',36)
+          table.string('id_usuario',36)
         })
     }
 
@@ -249,6 +249,23 @@ exports.do_migrations = async function () {
       table.string('contenido',2048)
       table.string('meta_data',2048)
       table.datetime('fecha_creado')
+    })
+  }
+
+  if (! await hasColumn("mascotas_registradas", 'codigo')) {
+    console.log("Creo columnas codigo, numero  en mascotas_registradas")
+    await knex.schema.alterTable('mascotas_registradas', function (table) {
+      table.string('codigo', 36)
+      table.integer('numero', 11)
+    })
+  }
+
+  if (! await hasTable("configuraciones")) {
+    console.log("Creo tabla configuraciones")
+    await global.knex.schema.createTable('configuraciones', function (table) {
+      table.primary(["id"])
+      table.string('id', 36)
+      table.string('valor',512)
     })
   }
 }

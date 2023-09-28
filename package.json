@@ -1,6 +1,6 @@
 {
   "name": "servicios_formulario_dinamico_api",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "API del servicio de formularios dinámicos",
   "main": "index.js",
   "scripts": {
