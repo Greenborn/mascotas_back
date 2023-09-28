@@ -180,15 +180,12 @@ exports.do_migrations = async function () {
     { id: uuid.v4(), id_permiso: 'MASCOTAS_C_USER_EDIT', id_rol: 'DUENIO_MASCOTA', fecha_creado: new Date(), fecha_modificado: new Date() }
     ,{ busqueda_ignorar_campo: ['fecha_creado', 'fecha_modificado', 'id'] })
 
-  if (! await hasTable("usuarios_roles")) {
-    console.log("Creo tabla usuarios_roles")
-    await global.knex.schema.createTable('usuarios_roles', function (table) {
-      table.primary(["id"])
-      table.string('id', 36)
-      table.string('id_usuario',36)
-      table.string('id_rol',36)
-      table.datetime('fecha_creado')
-      table.datetime('fecha_modificado')
+  if (! await hasTable("configuraciones")) {
+    console.log("Creo tabla configuraciones")
+    await global.knex.schema.createTable('configuraciones', function (table) {
+      table.primary(["clave"])
+      table.string('clave', 36)
+      table.string('valor',255)
     })
   }
 
