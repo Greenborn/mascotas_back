@@ -17,7 +17,6 @@ router.post('/reportar_extravio', async function (req, res) {
 
   try {
     let trx_0 = await global.knex.transaction()
-    let db_trx = await global.knex.transaction()
 
     const id_user = req.session.u_data.id
     let existe = await global.knex('mascotas_registradas').select().where({ 'id': req.body.id_mascota, id_usuario: id_user }).first()
@@ -43,6 +42,21 @@ router.post('/reportar_extravio', async function (req, res) {
   }
 })
 
+const CARACTERES_COD = ['0','1','2','3','4','5','6','7','8','9','0','a','b','c','d','e','f','g','h','i','j','k','l','m','n','o','p','q','r','s','t','u','v','w','x','y','z']
+function get_codigo(numero){
+  let salida = ''
+  let cant_ch = CARACTERES_COD.length
+  let terminar = false
+  while (!terminar){
+    let resto = numero % cant_ch
+    numero    = Math.floor(numero / cant_ch)
+    salida   += String(CARACTERES_COD[resto])
+    if (numero == 0)
+      terminar = true
+  }
+  return salida;
+}
+
 router.post('/agregar', async function (req, res) {
   console.log('[MASCOTAS][agregar] ',req.body)
 
@@ -63,15 +77,22 @@ router.post('/agregar', async function (req, res) {
   }
   
   try { 
+    let nro_mascota = 0
     //buscamos el ultimo numero de mascota para la generacion del QR
+    let config = await global.knex('configuraciones').select().where({ 'id': 'nro_mascota' }).first()
+    if (!config){
+      nro_mascota = Number(1)
+    } else {
+      nro_mascota = Number(config.valor) + 1
+    }
 
-
-    const id_mascota = uuid.v4()
+    const ID_MASCOTA = uuid.v4()
+    let proms_arr = []
     let _insert = {
-      id: id_mascota, fecha_registro: new Date(), fecha_actualizacion: new Date(),
-      id_usuario: req.session.u_data.id, tipo: req.body.tipo,
-      nombre: req.body.nombre, descripcion: req.body.descripcion, fecha_nacimiento: req.body.fecha_nacimiento,
-      sexo: req.body?.sexo, raza: req.body?.raza
+      id: ID_MASCOTA, fecha_registro: new Date(), fecha_actualizacion: new Date(),
+      id_usuario: req.session.u_data.id, tipo: req.body.tipo, perdida: 0,
+      nombre: req.body.nombre, descripcion: req.body.descripcion, fecha_nacimiento: new Date(req.body.fecha_nacimiento),
+      sexo: req.body?.sexo, raza: req.body?.raza, numero: nro_mascota, codigo: get_codigo(nro_mascota)
     }
 
     let imagenes = []
@@ -88,18 +109,27 @@ router.post('/agregar', async function (req, res) {
       });
 
       const _i_i = {
-        'id': uuid.v4(), 'url': ruta, 'id_mascota': id_mascota
+        'id': uuid.v4(), 'url': ruta, 'id_mascota': ID_MASCOTA
       }
       lst_imgs.push(_i_i)
-      await trx('imagenes_mascotas').insert(_i_i)
+      proms_arr.push( trx('imagenes_mascotas').insert(_i_i) )
     }
 
     if (lst_imgs.length > 0)
       _insert['id_imagen_principal'] = lst_imgs[0].id
 
-    await trx('mascotas_registradas').insert(_insert)
-    await trx.commit()
-    return res.status(200).send({ stat: true, text: 'Mascota registrada correctamente'})
+    proms_arr.push( trx('mascotas_registradas').insert(_insert) )
+    proms_arr.push( trx('configuraciones').update({ 'valor': nro_mascota }).where({'id': 'nro_mascota'}) )
+
+    let res_proms = await Promise.all( proms_arr )
+    if (res_proms){
+      await trx.commit()
+      return res.status(200).send({ stat: true, text: 'Mascota registrada correctamente'})
+    } else {
+      trx.rollback()
+      return res.status(200).send({ stat: false, text: 'Error interno'})
+    }
+    
   } catch (error) {
     trx.rollback()
     console.log(error)
@@ -248,9 +278,9 @@ router.get('/get_all', async function (req, res) {
                 .select()
                 .where({ 'id_usuario': id_user }),
         imagenes: await global.knex("imagenes_mascotas")
-                  .leftOuterJoin('mascotas_registradas', 'mascotas_registradas.id', 'imagenes_mascotas.id_mascota')
                   .select(['imagenes_mascotas.*', 'mascotas_registradas.id_usuario'])
-                  .where({ 'id_usuario': id_user })
+                  .leftOuterJoin('mascotas_registradas', 'mascotas_registradas.id', 'imagenes_mascotas.id_mascota')
+                  .where({ 'mascotas_registradas.id_usuario': id_user })
       })
     } catch (error) {
       console.log(error)
@@ -294,4 +324,28 @@ router.get('/get', async function (req, res) {
     return res.status(200).send({ stat: false, text: 'Error interno'})
   }
   res.status(200).send({ stat: true, data: mascota })
+})
+
+router.get('/get_qr', async function (req, res) {
+  console.log('[MASCOTAS][get_qr] ',req.query)
+
+  if (!req.query?.cod) 
+    return res.status(200).send({ stat: false, data: [] })
+
+  try {
+    var mascota = await global.knex("mascotas_registradas")
+                  .select().where({ codigo: req.query.cod }).first()
+    if (mascota){
+      mascota['imagenes'] = await global.knex("imagenes_mascotas").select().where({ id_mascota: mascota.id })
+      
+      res.status(200).send({ stat: true, data: mascota })
+    } else {
+      return res.status(200).send({ stat: false, text: 'Error interno'})
+    }
+    
+  } catch (error) {
+    console.log(error)
+    return res.status(200).send({ stat: false, text: 'Error interno'})
+  }
+  
 })

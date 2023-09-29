@@ -20,6 +20,7 @@ var paths = [
   { path: "/mascotas/perdidas_get_all", permisos: ['PERDIDA_GET_ALL'] },
   { path: "/mascotas/get_all", permisos: ['MASCOTAS_C_USER_ALL'] },
   { path: "/mascotas/get", permisos: ['MASCOTAS_C_USER_ONE'] },
+  { path: "/mascotas/get_qr" },
   { path: "/mascotas/agregar", permisos: ['MASCOTAS_C_USER_ALL'] },
   { path: "/mascotas/quitar", permisos: ['MASCOTAS_C_USER_DEL'] },
   { path: "/mascotas/def_foto_principal", permisos: ['MASCO_C_USER_CIMG']  },
