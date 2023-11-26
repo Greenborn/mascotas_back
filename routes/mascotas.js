@@ -30,7 +30,7 @@ router.post('/reportar_extravio', async function (req, res) {
         id_mascota: req.body?.id_mascota,
         fecha_registro: new Date()
       })
-      await trx_0("mascotas_registradas").edit({
+      await trx_0("mascotas_registradas").update({
         perdida: 1
       }).where({ id: req.body?.id_mascota })
       await trx_0.commit()

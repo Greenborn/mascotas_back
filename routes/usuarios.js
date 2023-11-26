@@ -158,7 +158,35 @@ router.put('/actualizar_datos', async function (req, res) {
     console.log('[USUARIO][actualizar_datos] ', req.body)
     
     try {
-        return res.status(200).send({ stat: true, data: [], 'text':'funcionalidad no implementada' })
+        var trx = await global.knex.transaction()
+    } catch (error) {
+        console.log(error)
+        return res.status(200).send({ stat: false, text: 'Error interno'})
+    }
+
+    try {
+        const HOY = new Date()
+
+        if (req?.session?.u_data?.id != req?.body?.id)
+            return res.status(200).send({ stat: true, data: [], 'text':'¿Intenta editar otro usuario? <b>Solo puede editar el suyo propio</b>.' })
+
+        let usuario = await global.knex("usuario").select().where({ id: req.body.id }).first()
+
+        if (!usuario){
+            return res.status(200).send({ stat: true, data: [], 'text':'Error Interno.' })
+        }
+
+        if (usuario){
+            let update_data = {
+                'nombre': req?.body?.nombre,
+                'descripcion': req?.body?.descripcion,
+                'fecha_nacimiento': new Date(req?.body?.fecha_nacimiento),
+                'fecha_modificado': HOY
+            }
+            await trx('usuario').update(update_data).where({ id: req.body.id })
+            await trx.commit()
+            return res.status(200).send({ stat: true, data: [], 'text':'funcionalidad no terminada ¿Usuario editado?' })
+        }
     } catch (error) {
         console.log(error)
         return res.status(200).send({ stat: false, data: [], text: 'Error Interno' })
