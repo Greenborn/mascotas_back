@@ -5,9 +5,14 @@ module.exports = router
 const bcrypt = require('bcrypt')
 const uuid = require("uuid")
 
+const reintentos_user = {}
+const LIMIT_RETRY = 7
+const MIN_TIME_RETRY = 100000
+
 router.post('/login', async function (req, res) {
     console.log('[USUARIO][login] ',req.body)
-    
+    const AHORA = new Date()
+
     if ( req.body?.u == undefined || req.body?.u == ''){
         return res.status(200).send({ stat: false, data: [] })
     }
@@ -17,10 +22,29 @@ router.post('/login', async function (req, res) {
     }
 
     try {
-        let usuario = await global.knex("usuario").select().where({ email: req.body.u }).first()
+        const EMAIL_U = String( req.body.u )
+
+        if (reintentos_user[ EMAIL_U ] == undefined)
+            reintentos_user[ EMAIL_U ] = { cant: 0, t: AHORA.getTime() }
+        else
+            reintentos_user[ EMAIL_U ].t = AHORA.getTime()
+
+        reintentos_user[ EMAIL_U ].cant ++
+        if ( reintentos_user[ EMAIL_U ].cant > LIMIT_RETRY ){
+            //si paso el tiempo minimo se resetean los reintentos para ese user
+            if ( AHORA.getTime() - reintentos_user[ EMAIL_U ].t > MIN_TIME_RETRY ){ 
+                reintentos_user[ EMAIL_U ].cant = 1
+            } else { // caso contrario se indica mensaje de error
+                return res.status(200).send({ stat: false, data: [], text: 'Cantidad de reintentos Excesida, Reintente más tarde.' })
+            }
+        }
+
+        let usuario = await global.knex("usuario").select().where({ email: EMAIL_U }).first()
         if (usuario){
+            
             let isValid = await bcrypt.compare(req.body.p, usuario.pass)
             if (isValid){
+                delete reintentos_user[ EMAIL_U ]
                 delete usuario.pass
 
                 req.session.isLogged = true
@@ -38,6 +62,7 @@ router.post('/login', async function (req, res) {
 
                 return res.status(200).send({ stat: true, data: usuario })
             } else {
+
                 return res.status(200).send({ stat: false, data: [], text: 'Usuario o contraseñas inválida.' })
             }
             
